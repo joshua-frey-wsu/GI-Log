@@ -9,9 +9,16 @@ CREATE TABLE members (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     birth_date DATE,
-    dietary_issues TEXT [], -- List of dietary issues known by user,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ
+);
+
+-- Table to store a members dietary issues
+CREATE TABLE members_dietary_issues (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    dietary_issue VARCHAR(50) NOT NULL,
+    user_id UUID NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE admins (
@@ -55,11 +62,19 @@ CREATE TABLE drugs_and_supplements (
 CREATE TABLE recipes (
     recipe_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     recipe_name VARCHAR(50) NOT NULL,
-    ingredients JSON NOT NULL,
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
+);
+
+-- Table to store ingredients for a recipe
+CREATE TABLE ingredients (
+    ingredient_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ingredient_name VARCHAR(50) NOT NULL,
+    ingredient_amount VARCHAR(50) NOT NULL,
+    recipe_id UUID NOT NULL,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
 );
 
 CREATE TYPE diet_status AS ENUM('starting diet', 'ending diet');
