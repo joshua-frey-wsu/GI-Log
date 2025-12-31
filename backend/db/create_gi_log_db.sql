@@ -18,6 +18,8 @@ CREATE TABLE members_dietary_issues (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     dietary_issue VARCHAR(50) NOT NULL,
     user_id UUID NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ,
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
@@ -74,6 +76,8 @@ CREATE TABLE ingredients (
     ingredient_name VARCHAR(50) NOT NULL,
     ingredient_amount VARCHAR(50) NOT NULL,
     recipe_id UUID NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ,
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
 );
 
