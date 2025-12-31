@@ -92,7 +92,7 @@ CREATE TABLE diet_entries (
     user_id UUID NOT NULL,
     diet_id UUID NOT NULL,
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id, diet_id) REFERENCES diets(user_id, diet_id)
+    FOREIGN KEY (user_id, diet_id) REFERENCES diets(user_id, diet_id) ON DELETE CASCADE
 );
 
 -- Table to store when a user takes their medication and supplements
@@ -103,7 +103,7 @@ CREATE TABLE drug_supplement_entries (
     user_id UUID NOT NULL,
     drugs_and_supplements_id UUID NOT NULL,
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id, drugs_and_supplements_id) REFERENCES drugs_and_supplements(user_id, drugs_and_supplements_id)
+    FOREIGN KEY (user_id, drugs_and_supplements_id) REFERENCES drugs_and_supplements(user_id, drugs_and_supplements_id) ON DELETE CASCADE
 );
 
 -- Table to store what meals a user eats 
@@ -128,8 +128,8 @@ CREATE TABLE recipes_entered_in_meal (
 -- Table to store data on the type of stool
 CREATE TABLE stool_types (
     stool_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    stool_type VARCHAR(10) NOT NULL,
-    stool_description VARCHAR(100) NOT NULL,
+    stool_type VARCHAR(10) UNIQUE NOT NULL,
+    stool_description VARCHAR(100) UNIQUE NOT NULL,
     indication VARCHAR(50) NOT NULL
 );
 
