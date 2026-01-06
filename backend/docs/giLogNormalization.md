@@ -10,6 +10,8 @@ Normalization on Initial DB
 
 - Updated DB Schema with two new relations to remove array data types in violated relations. 
 
+- Updated many of the relations unique constraints to make sure relations don't violate 1NF.
+
 
 2NF
 
@@ -32,6 +34,17 @@ Members_Dietary_Issues:
 All relations pass 2NF.
 
 3NF
+
+Drugs_and_Supplements:
+
+    - This relation violates 3NF because there is a transitive dependency between the non-primary key attribute 'product_type' and the primary key attributes drugs_and_supplements_id and [user_id + drugs_and_supplements_name]
+    - drugs_and_supplements_id -> drugs_and_supplements_name, dosage, product_type, user_id, created_at, updated_at
+    - drugs_and_supplements_name -> product_type (violation)
+    - Fix: Divide into two sub-relation:
+        - 1. Products(product_id, product_name, product_type)
+        - 2. Products_used_by_user(id, dosage, user_id, created_at, updated_at)
+
+Rest of relations are in 3NF.
 
 BCNF
 

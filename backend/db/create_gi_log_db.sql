@@ -20,6 +20,7 @@ CREATE TABLE members_dietary_issues (
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
+    UNIQUE (user_id, dietary_issue),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
@@ -41,23 +42,30 @@ CREATE TABLE diets (
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
-    CONSTRAINT unique_user_diet UNIQUE (user_id, diet_id),
+    CONSTRAINT unique_user_diet UNIQUE (user_id, diet_name),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
 CREATE TYPE product_type AS ENUM('drug', 'supplement');
 
--- Table to store what medication and supplements a user takes
-CREATE TABLE drugs_and_supplements (
-    drugs_and_supplements_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    drugs_and_supplements_name VARCHAR(50) NOT NULL,
+-- Table to store drugs and supplement data
+CREATE TABLE products (
+    product_id UUID PRIMARY KEY default gen_random_uuid(),
+    product_name VARCHAR(50) UNIQUE NOT NULL,
+    product_type PRODUCT_TYPE NOT NULL
+);
+
+-- Table to store the drugs and supplements used by each user
+CREATE TABLE products_used_by_user(
+    products_used_by_user_id UUID PRIMARY KEY default gen_random_uuid(),
     dosage VARCHAR(100) NOT NULL,
-    product_type PRODUCT_TYPE NOT NULL,
     user_id UUID NOT NULL,
+    product_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
-    CONSTRAINT unique_user_medications UNIQUE (user_id, drugs_and_supplements_id),
-    FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
+    CONSTRAINT unique_user_products UNIQUE (user_id, product_id),
+    FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
 -- Table to store what recipes a user cooks/eats
@@ -67,6 +75,7 @@ CREATE TABLE recipes (
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
+    UNIQUE (user_id, recipe_name),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
@@ -78,6 +87,7 @@ CREATE TABLE ingredients (
     recipe_id UUID NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ,
+    UNIQUE (recipe_id, ingredient_name),
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
 );
 
@@ -90,9 +100,10 @@ CREATE TABLE diet_entries (
     diet_status DIET_STATUS NOT NULL,
     additional_comments TEXT,
     user_id UUID NOT NULL,
-    diet_id UUID NOT NULL,
+    diet_name VARCHAR(50) NOT NULL,
+    UNIQUE (user_id, entered_at, diet_name),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id, diet_id) REFERENCES diets(user_id, diet_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id, diet_name) REFERENCES diets(user_id, diet_name) ON DELETE CASCADE
 );
 
 -- Table to store when a user takes their medication and supplements
@@ -101,9 +112,10 @@ CREATE TABLE drug_supplement_entries (
     entered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     additional_comments TEXT,
     user_id UUID NOT NULL,
-    drugs_and_supplements_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    UNIQUE (user_id, entered_at, product_id),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id, drugs_and_supplements_id) REFERENCES drugs_and_supplements(user_id, drugs_and_supplements_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id, product_id) REFERENCES products_used_by_user(user_id, product_id) ON DELETE CASCADE
 );
 
 -- Table to store what meals a user eats 
@@ -113,22 +125,23 @@ CREATE TABLE meal_entries (
     meal_description TEXT NOT NULL,
     additional_comments TEXT,
     user_id UUID NOT NULL,
+    UNIQUE (user_id, entered_at),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
 -- junction table to store the recipes involved with each meal a user has, user could have multiple in one sitting
 CREATE TABLE recipes_entered_in_meal (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    entry_id UUID,
-    recipe_id UUID,
+    entry_id UUID NOT NULL,
+    recipe_id UUID NOT NULL,
+    UNIQUE (entry_id, recipe_id),
     FOREIGN KEY (entry_id) REFERENCES meal_entries(entry_id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
 );
 
 -- Table to store data on the type of stool
 CREATE TABLE stool_types (
-    stool_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    stool_type VARCHAR(10) UNIQUE NOT NULL,
+    stool_type SMALLINT CHECK(stool_type BETWEEN 1 AND 7) PRIMARY KEY,
     stool_description VARCHAR(100) UNIQUE NOT NULL,
     indication VARCHAR(50) NOT NULL
 );
@@ -141,9 +154,10 @@ CREATE TABLE stool_entries (
     blood_present BOOLEAN NOT NULL,
     additional_comments TEXT,
     user_id UUID NOT NULL,
-    stool_id UUID NOT NULL,
+    stool_type SMALLINT NOT NULL,
+    UNIQUE (user_id, entered_at),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (stool_id) REFERENCES stool_types(stool_id) ON DELETE CASCADE
+    FOREIGN KEY (stool_type) REFERENCES stool_types(stool_type) ON DELETE CASCADE
 );
 
 -- Table to store the mental and physical health of users 
@@ -159,17 +173,18 @@ CREATE TABLE health_entries (
     physical_health_log TEXT NOT NULL,
     additional_comments TEXT,
     user_id UUID NOT NULL,
+    UNIQUE (user_id, entered_at),
     FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
 );
 
 -- INSERT stool type data
 INSERT INTO stool_types (stool_type, stool_description, indication)
-VALUES ('TYPE 1', 'Separate hard lumps', 'Very Constipated'),
-       ('TYPE 2', 'Lumpy and sausage like', 'Slightly Constipated'),
-       ('TYPE 3', 'A sausage shape with cracks in the surface', 'Normal'),
-       ('TYPE 4', 'Like a smooth, soft sausage or snake', 'Normal'),
-       ('TYPE 5', 'Soft blobs with clear-cut edges', 'Lacking fiber'),
-       ('TYPE 6', 'Mushy consistency with ragged edges', 'Inflammation'),
-       ('TYPE 7', 'Liquid consistency with no solid pieces', 'Inflammation and diarrhea');
+VALUES ('1', 'Separate hard lumps', 'Very Constipated'),
+       ('2', 'Lumpy and sausage like', 'Slightly Constipated'),
+       ('3', 'A sausage shape with cracks in the surface', 'Normal'),
+       ('4', 'Like a smooth, soft sausage or snake', 'Normal'),
+       ('5', 'Soft blobs with clear-cut edges', 'Lacking fiber'),
+       ('6', 'Mushy consistency with ragged edges', 'Inflammation'),
+       ('7', 'Liquid consistency with no solid pieces', 'Inflammation and diarrhea');
 
 
