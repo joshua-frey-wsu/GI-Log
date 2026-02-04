@@ -48,6 +48,8 @@ Rest of relations are in 3NF.
 
 BCNF
 
+All relations are in BCNF.
+
 4NF
 
 5NF
