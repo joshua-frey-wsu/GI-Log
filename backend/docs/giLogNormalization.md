@@ -52,4 +52,8 @@ All relations are in BCNF.
 
 4NF
 
+All relations in 4NF.
+
 5NF
+
+All relations in 5NF.
