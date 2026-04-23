@@ -1,0 +1,15 @@
+services:
+  db: 
+    container_name: postgres-dev
+    restart: always
+    command: ["postgres", "-c", "timezone=America/Los_Angeles"]
+    env_file: 
+      - ./.env.dev
+    volumes:
+      - ./db/scripts/init_docker_db:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "127.0.0.1:5433:5432"  # Expose to localhost only
+    
+volumes:
+  postgres_data:
