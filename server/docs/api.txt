@@ -1,0 +1,18 @@
+What entities are we managing with the API?
+
+- Users (Members/Admins, members dietary restrictions)
+    - Get Users 
+    - Get User
+    - Create User
+    - Update User (user data / dietary restrictions)
+
+- Diets
+
+- Products (medication / supplements)
+    - products used by user
+
+- Recipes
+
+- Entries
+
+- Analytics (future)

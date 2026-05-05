@@ -1,12 +1,15 @@
-const express = require('express');
-require('dotenv').config({
-    path: process.env.NODE_ENV ? '../.env' : '../.env.dev',
-})
+import express from 'express';
+import memberRoutes from './routes/member.routes.js';
 
 const app = express();
 
+// Middleware
 app.use(express.json());
 
+// Routes
+app.use('/api/members', memberRoutes);
+
+// Health check
 app.get('/status', (req, res) => {
     res.json({
         status: 'Running',
@@ -15,4 +18,4 @@ app.get('/status', (req, res) => {
 });
 
 const PORT = process.env.SERVER_PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}, db name: ${process.env.DB_PORT}`));

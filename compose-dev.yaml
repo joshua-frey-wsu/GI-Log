@@ -6,6 +6,7 @@ services:
     container_name: express-api-dev
     ports: 
       - '${SERVER_PORT:-3000}:3000' # API server
+      - '${DEBUG_PORT:-9229}:9229' # Node.js debugger
     env_file:
       - ./.env.dev
     depends_on:
@@ -22,7 +23,7 @@ services:
       - ./db/scripts/init_docker_db:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql
     ports:
-      - "127.0.0.1:5433:5432"  # Expose to localhost only
+      - "${DB_PORT:-5432}:5432"  # Expose to localhost only
     
 volumes:
   postgres_data:
