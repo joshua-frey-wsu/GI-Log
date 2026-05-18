@@ -19,18 +19,42 @@ class MemberRepository {
     }
 
     // READ - Get all members with optional filtering
-    async findAll() {
+    async findAll(filters = {}, sort = {}) {
         try {
             const { rows } = await pool.query(
                 'SELECT user_id AS "userId", email, first_name AS "firstName", last_name AS "lastName", birth_date AS "birthDate", created_at AS "createdAt" \
                 FROM members'
             );
-            console.log("members data: ", rows);
+            console.log('members data: ', rows);
             return rows;
         } catch (error) {
-            console.error("DB error: ", error);
+            console.error('DB error: ', error);
             throw new Error(`Error fetching members: ${error.message}`);
         }
+    }
+
+    async findById(memberId) {
+        try {
+            const { rows } = await pool.query(
+                'SELECT user_id AS "userId", email, first_name AS "firstName", last_name AS "lastName", birth_date AS "birthDate", created_at AS "createdAt" \
+                FROM members \
+                WHERE user_id = $1',
+                [memberId]
+            );
+            console.log('member data: ', rows);
+            return rows;
+        } catch (error) {
+            console.error('DB error: ', error);
+            throw new Error(`Error fetching member (memberId = ${memberId}): ${error.message}`);
+        }
+    }
+
+    async update(memberId, updateData) {
+
+    }
+
+    async delete(memberId) {
+
     }
 }
 

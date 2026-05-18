@@ -1,7 +1,7 @@
 What entities are we managing with the API?
 
 - Users (Members/Admins, members dietary restrictions)
-    - Get Users 
+    - Get Users (Admin Only) 
     - Get User
     - Create User
     - Update User (user data / dietary restrictions)
@@ -16,3 +16,72 @@ What entities are we managing with the API?
 - Entries
 
 - Analytics (future)
+
+Authentication?
+
+JWT Tokens - Users
+API KEY - Developers/Admins
+
+Authorization?
+
+Protected: 
+    Admin Routes - Admins (API KEY)
+    User Routes - Members & Admins 
+
+Public:
+    register (Member Creation)
+
+
+Routes:
+
+Create Account:
+
+-   POST /api/auth/register
+
+Login:
+
+- POST /api/auth/Login
+
+User:
+
+- GET /api/admin/members (Admin only)
+- GET /api/members/{userId}
+- PATCH /api/members/{userId}
+- DELETE /api/members/{userId}
+
+Dietary Issues:
+
+GET    /api/admin/dietary-issues (Admin Only)
+GET    /api/members/{userId}/dietary-issues
+POST   /api/members/{userId}/dietary-issues
+DELETE /api/members/{userId}/dietary-issues/{issueId}
+
+Diets:
+
+GET    /api/admin/diets (Admin Only)
+GET    /api/members/{userId}/diets
+POST   /api/members/{userId}/diets
+DELETE /api/members/{userId}/diets/{dietId}
+
+Products:
+
+GET    /api/products
+GET    /api/products/{productId}
+POST   /api/admin/products (Admin only)
+PATCH  /api/admin/products/{productId} (Admin Only)
+DELETE /api/admin/products/{productId} (Admin Only)
+
+Products Used By User:
+
+GET    /api/members/{userId}/products
+POST   /api/members/{userId}/products (Product used by user / also adds new product to products table if it doesnt exist yet)
+PATCH  /api/members/{userId}/products/{id} (update dosage of product used by user)
+DELETE /api/members/{userId}/products/{id}
+
+Recipes:
+GET    /admin/recipes (Admin Only)
+GET    /members/{userId}/recipes
+POST   /members/{userId}/recipes
+GET    /recipes/{recipeId}
+PATCH  /recipes/{recipeId}
+DELETE /recipes/{recipeId}

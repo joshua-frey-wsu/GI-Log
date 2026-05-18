@@ -12,8 +12,6 @@ const __dirname = path.dirname(__filename);
 import dotenv from 'dotenv';
 dotenv.config({ path: path.join(__dirname, '../../.env.dev') });
 
-console.log("host: ", process.env.DB_HOST);
-
 export const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,

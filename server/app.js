@@ -18,4 +18,4 @@ app.get('/status', (req, res) => {
 });
 
 const PORT = process.env.SERVER_PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}, db name: ${process.env.DB_PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
