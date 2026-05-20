@@ -5,7 +5,7 @@ import { errorConverter } from './middlewares/errorConverter.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { NotFoundError } from './helpers/ApiError.js';
 
-const app = express();
+export const app = express();
 
 // Middleware
 app.use(express.json());
