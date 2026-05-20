@@ -1,4 +1,4 @@
-import { ApiError } from "../helpers/ApiError";
+import { ApiError } from "../helpers/ApiError.js";
 
 /**
  * Formats error details for development responses.

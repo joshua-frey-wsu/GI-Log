@@ -3,7 +3,7 @@
  * These type of errors nee to be converted to fit the custom error format created.
  */
 
-import { ApiError, ValidationError, ConflictError } from "../helpers/ApiError";
+import { ApiError, ValidationError, ConflictError } from "../helpers/ApiError.js";
 
 /**
  * Converts known error types to ApiError instances.

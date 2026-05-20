@@ -1,4 +1,4 @@
-import { app } from "./app";
+import { app } from "./app.js";
 
 // Handle uncaught exceptions (synchronous errors outside Express)
 process.on('uncaughtException', (err) => {
