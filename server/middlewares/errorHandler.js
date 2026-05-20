@@ -64,8 +64,21 @@ export const errorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
 
     // Log all errors for debugging
-    console.error(`[${new Date().toISOString()}] ${err.statusCode} - ${err.message}`);
-    console.error(`Path: ${req.method} ${req.originalUrl}`);
+    // Enhanced logging with request context
+    console.error(JSON.stringify({
+        level: 'error',
+        requestId: req.requestId,
+        method: req.method,
+        path: req.originalUrl,
+        statusCode: err.statusCode,
+        errorCode: err.errorCode,
+        message: err.message,
+        duration: req.startTime ? Date.now() - req.startTime : null,
+        stack: err.isOperational ? undefined : err.stack,
+        timestamp: new Date().toISOString()
+    }));
+    // console.error(`[${new Date().toISOString()}] ${err.statusCode} - ${err.message}`);
+    // console.error(`Path: ${req.method} ${req.originalUrl}`);
 
     // Log stack trace for non-operational errors
     if (!err.isOperational) {
@@ -81,6 +94,8 @@ export const errorHandler = (err, req, res, next) => {
     if (err.retryAfter) {
         res.set('Retry-After', err.retryAfter);
     }
+
+    response.requestId = req.requestId; // Attach request ID to the response
 
     res.status(err.statusCode).json(response);
 };
